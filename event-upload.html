@@ -22,7 +22,7 @@
 
     <label for="files" style="margin-top:16px">上传照片 *</label>
     <input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple required />
-    <div class="hint">规则：每次最多 5 张；单张不超过 8MB；优先上传手机相册原图，系统会尽量读取拍摄时间。</div>
+    <div class="hint">规则：临时测试期不限制上传张数和单张体积；优先上传手机相册原图，系统会尽量读取拍摄时间。</div>
     <div id="preview"></div>
 
     <button class="btn" id="submitBtn" type="submit">上传照片</button>
@@ -36,7 +36,7 @@
 const BACKEND = 'https://script.google.com/macros/s/AKfycby3yJC1MOGSrA8If2tRArf0-cw4DAnBfdFssYdvwjT9EWsWbXIWta3piUUEE4fdmced/exec';
 const EVENT_ID = new URLSearchParams(location.search).get('event') || 'tonight-public-event';
 const EVENT_TITLE = new URLSearchParams(location.search).get('title') || 'Tonight Public Event';
-const MAX_FILES=5, MAX_BYTES=8*1024*1024;
+const MAX_FILES=999, MAX_BYTES=Number.POSITIVE_INFINITY;
 let prepared=[];
 function fmtBytes(n){return n>1024*1024?(n/1024/1024).toFixed(1)+' MB':Math.round(n/1024)+' KB'}
 function normalizeDate(v){if(!v)return ''; if(v instanceof Date&&!isNaN(v))return v.toISOString(); const d=new Date(v); return isNaN(d)?String(v):d.toISOString();}
@@ -46,9 +46,9 @@ function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReade
 async function inspect(){
   const box=document.getElementById('preview'); box.innerHTML=''; prepared=[];
   const files=[...document.getElementById('files').files];
-  if(files.length>MAX_FILES){show('bad','一次最多上传 5 张，请减少照片数量。'); return;}
+  if(files.length>MAX_FILES){show('bad','临时测试期不限制上传张数。'); return;}
   for(const file of files){
-    if(file.size>MAX_BYTES){box.insertAdjacentHTML('beforeend',`<div class="file">❌ ${file.name} · ${fmtBytes(file.size)}，超过 8MB</div>`); continue;}
+    if(file.size>MAX_BYTES){box.insertAdjacentHTML('beforeend',`<div class="file">❌ ${file.name} · ${fmtBytes(file.size)}，文件较大，若上传失败请改用较小文件</div>`); continue;}
     let exif={}, shotAt='', modifiedAt='';
     try{exif=await exifr.parse(file,['DateTimeOriginal','CreateDate','ModifyDate','DateTimeDigitized'])||{};}catch(e){}
     shotAt=normalizeDate(exif.DateTimeOriginal||exif.CreateDate||exif.DateTimeDigitized);

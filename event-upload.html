@@ -1,125 +1,75 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Event Memory Upload</title>
+  <title>活动照片上传</title>
   <script src="https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js"></script>
   <style>
-    :root{--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#f9fafb;--accent:#2563eb;--ok:#16a34a;--bad:#dc2626;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-size:16px;line-height:1.5}main{max-width:760px;margin:0 auto;padding:34px 18px 72px}header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:22px}.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:10px}h1{font-size:clamp(30px,8vw,52px);letter-spacing:-.055em;line-height:1;margin:0 0 12px}.lead{font-size:17px;color:#374151;margin:0}.box{border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;background:#fff}.rule{background:#f9fafb}.row{display:grid;gap:12px;margin:14px 0}label{font-weight:750;font-size:14px}input,textarea,select{width:100%;border:1px solid #d1d5db;border-radius:12px;padding:12px;font:inherit;background:#fff}textarea{min-height:82px}input[type=file]{padding:14px;background:#fafafa}.hint{color:var(--muted);font-size:13px;margin-top:6px}.btn{width:100%;border:0;border-radius:14px;padding:14px 16px;background:var(--ink);color:white;font-weight:850;font-size:16px;cursor:pointer}.btn[disabled]{opacity:.5;cursor:not-allowed}.smallbtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 10px;font-weight:750}.preview{display:grid;gap:10px}.file{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fafafa}.file b{display:block}.meta{font-size:13px;color:var(--muted);margin-top:4px}.status{border-radius:14px;padding:12px;margin-top:14px;display:none}.status.ok{display:block;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.status.bad{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}.admin{font-size:13px;color:var(--muted)}.admin summary{cursor:pointer}.bar{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:12px}.bar span{display:block;height:100%;width:0;background:var(--accent);transition:.2s}.hidden{display:none}@media(min-width:700px){.two{grid-template-columns:1fr 1fr}}
+    *{box-sizing:border-box} body{margin:0;background:#fff;color:#111827;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}
+    main{max-width:560px;margin:0 auto;padding:28px 18px 56px} h1{font-size:34px;line-height:1.05;letter-spacing:-.05em;margin:0 0 12px} p{margin:0;color:#4b5563} .card{border:1px solid #e5e7eb;border-radius:18px;padding:18px;margin:16px 0;background:#fff} label{display:block;font-size:14px;font-weight:800;margin-bottom:7px} input,textarea{width:100%;border:1px solid #d1d5db;border-radius:14px;padding:13px;font:inherit} input[type=file]{background:#f9fafb;padding:18px} .btn{width:100%;border:0;border-radius:16px;background:#111827;color:white;font-size:18px;font-weight:900;padding:16px;margin-top:14px} .hint,.fine{font-size:13px;color:#6b7280;margin-top:8px} .fine{border-top:1px solid #e5e7eb;padding-top:14px} .status{display:none;border-radius:14px;padding:12px;margin-top:12px;font-size:14px} .ok{display:block;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0} .bad{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca} .file{font-size:13px;color:#374151;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-top:8px} .bar{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:12px;display:none} .bar span{display:block;height:100%;width:0;background:#2563eb;transition:.2s}
   </style>
 </head>
 <body>
 <main>
-  <header>
-    <div class="eyebrow">Public Event Memory Upload</div>
-    <h1 id="eventTitle">Tonight's Event Upload</h1>
-    <p class="lead" id="eventDesc">Scan, upload your photos, and help build the shared memory record. No Google login required.</p>
-  </header>
+  <h1>活动照片上传</h1>
+  <p id="eventDesc">请上传你在现场拍到的照片，帮助整理活动回忆。无需登录 Google。</p>
 
-  <section class="box rule">
-    <b>Upload rules</b>
-    <div class="hint" id="rulesText">Photos only for this event. Max 8 MB per file. Add your name/code so the organizer can sort moments later.</div>
-  </section>
+  <form id="uploadForm" class="card">
+    <label for="uploader">姓名 / ID / 代号 *</label>
+    <input id="uploader" required placeholder="例如：Victor / A12 / 桌号6" autocomplete="name" />
 
-  <form id="uploadForm">
-    <section class="box">
-      <div class="row two">
-        <div><label for="uploader">Your name / code *</label><input id="uploader" name="uploader" required placeholder="e.g. Victor / Table 6 / Team A" /></div>
-        <div><label for="group">Group / table / role</label><input id="group" name="group" placeholder="optional" /></div>
-      </div>
-      <div class="row">
-        <label for="note">Note</label>
-        <textarea id="note" name="note" placeholder="What are these photos about? e.g. opening, dinner, group photo, stage, backstage..."></textarea>
-      </div>
-      <div class="row">
-        <label for="files">Choose photos *</label>
-        <input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple required />
-        <div class="hint">MVP limit: up to 5 photos per submission, 8 MB each. Original shooting time will be read from EXIF when available.</div>
-      </div>
-      <div class="preview" id="preview"></div>
-      <button class="btn" id="submitBtn" type="submit">Upload to event archive</button>
-      <div class="bar hidden" id="progress"><span></span></div>
-      <div id="status" class="status"></div>
-    </section>
+    <label for="files" style="margin-top:16px">上传照片 *</label>
+    <input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple required />
+    <div class="hint">规则：每次最多 5 张；单张不超过 8MB；优先上传手机相册原图，系统会尽量读取拍摄时间。</div>
+    <div id="preview"></div>
+
+    <button class="btn" id="submitBtn" type="submit">上传照片</button>
+    <div class="bar" id="progress"><span></span></div>
+    <div id="status" class="status"></div>
+
+    <div class="fine">免责说明：请只上传与本活动相关、你有权分享的照片。上传后，活动组织者可用于本次活动资料整理、回忆记录和内部展示测试。请勿上传隐私、敏感或不适合公开展示的内容。</div>
   </form>
-
-  <details class="admin box">
-    <summary>Organizer setup</summary>
-    <p>Backend URL is read from <code>?backend=...</code> or localStorage key <code>eventMemoryBackendUrl</code>.</p>
-    <p>Current backend: <code id="backendShow"></code></p>
-    <input id="backendInput" placeholder="Paste Google Apps Script Web App URL" />
-    <button class="smallbtn" id="saveBackend" type="button">Save backend URL on this phone/browser</button>
-  </details>
 </main>
 <script>
-const MAX_FILES = 5;
-const MAX_BYTES = 8 * 1024 * 1024;
-const qs = new URLSearchParams(location.search);
-const cfg = {
-  eventId: qs.get('event') || 'tonight-test-event',
-  eventTitle: qs.get('title') || "Tonight's Event Upload",
-  eventDesc: qs.get('desc') || 'Scan, upload your photos, and help build the shared memory record. No Google login required.',
-  rules: qs.get('rules') || 'Photos only for this event. Max 8 MB per file. Add your name/code so the organizer can sort moments later.',
-  backendUrl: qs.get('backend') || localStorage.getItem('eventMemoryBackendUrl') || 'https://script.google.com/macros/s/AKfycby3yJC1MOGSrA8If2tRArf0-cw4DAnBfdFssYdvwjT9EWsWbXIWta3piUUEE4fdmced/exec'
-};
-document.getElementById('eventTitle').textContent = cfg.eventTitle;
-document.getElementById('eventDesc').textContent = cfg.eventDesc;
-document.getElementById('rulesText').textContent = cfg.rules;
-document.getElementById('backendShow').textContent = cfg.backendUrl || 'NOT SET';
-document.getElementById('backendInput').value = cfg.backendUrl;
-document.getElementById('saveBackend').onclick = () => { localStorage.setItem('eventMemoryBackendUrl', document.getElementById('backendInput').value.trim()); location.reload(); };
-
-const filesEl = document.getElementById('files');
-const previewEl = document.getElementById('preview');
-let prepared = [];
-function fmtBytes(n){ return n > 1024*1024 ? (n/1024/1024).toFixed(1)+' MB' : Math.round(n/1024)+' KB'; }
-function normalizeDate(v){
-  if(!v) return '';
-  if(v instanceof Date && !isNaN(v)) return v.toISOString();
-  const d = new Date(v); return isNaN(d) ? String(v) : d.toISOString();
-}
-async function fileToBase64(file){ return new Promise((res, rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(file); }); }
-async function inspectFiles(){
-  previewEl.innerHTML = ''; prepared = [];
-  const files = [...filesEl.files];
-  if(files.length > MAX_FILES){ show('bad', `Too many files. Please select up to ${MAX_FILES} photos per submission.`); filesEl.value=''; return; }
+const BACKEND = 'https://script.google.com/macros/s/AKfycby3yJC1MOGSrA8If2tRArf0-cw4DAnBfdFssYdvwjT9EWsWbXIWta3piUUEE4fdmced/exec';
+const EVENT_ID = new URLSearchParams(location.search).get('event') || 'tonight-public-event';
+const EVENT_TITLE = new URLSearchParams(location.search).get('title') || 'Tonight Public Event';
+const MAX_FILES=5, MAX_BYTES=8*1024*1024;
+let prepared=[];
+function fmtBytes(n){return n>1024*1024?(n/1024/1024).toFixed(1)+' MB':Math.round(n/1024)+' KB'}
+function normalizeDate(v){if(!v)return ''; if(v instanceof Date&&!isNaN(v))return v.toISOString(); const d=new Date(v); return isNaN(d)?String(v):d.toISOString();}
+function show(k,m){const el=document.getElementById('status'); el.className='status '+k; el.textContent=m;}
+function prog(p){const b=document.getElementById('progress'); b.style.display='block'; b.querySelector('span').style.width=p+'%';}
+function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(file);})}
+async function inspect(){
+  const box=document.getElementById('preview'); box.innerHTML=''; prepared=[];
+  const files=[...document.getElementById('files').files];
+  if(files.length>MAX_FILES){show('bad','一次最多上传 5 张，请减少照片数量。'); return;}
   for(const file of files){
-    const item = document.createElement('div'); item.className='file';
-    let exif = {}, shotAt='', modifyAt='';
-    if(file.size > MAX_BYTES){ item.innerHTML = `<b>${file.name}</b><div class="meta">❌ ${fmtBytes(file.size)} exceeds 8 MB</div>`; previewEl.appendChild(item); continue; }
-    try { exif = await exifr.parse(file, ['DateTimeOriginal','CreateDate','ModifyDate','DateTimeDigitized','OffsetTimeOriginal']) || {}; } catch(e) { exif = {}; }
-    shotAt = normalizeDate(exif.DateTimeOriginal || exif.CreateDate || exif.DateTimeDigitized);
-    modifyAt = normalizeDate(exif.ModifyDate || file.lastModifiedDate || file.lastModified);
-    prepared.push({file, shotAt, modifyAt, exifKeys:Object.keys(exif||{})});
-    item.innerHTML = `<b>${file.name}</b><div class="meta">${fmtBytes(file.size)} · shot: ${shotAt || 'not found'} · modified: ${modifyAt || 'not found'}</div>`;
-    previewEl.appendChild(item);
+    if(file.size>MAX_BYTES){box.insertAdjacentHTML('beforeend',`<div class="file">❌ ${file.name} · ${fmtBytes(file.size)}，超过 8MB</div>`); continue;}
+    let exif={}, shotAt='', modifiedAt='';
+    try{exif=await exifr.parse(file,['DateTimeOriginal','CreateDate','ModifyDate','DateTimeDigitized'])||{};}catch(e){}
+    shotAt=normalizeDate(exif.DateTimeOriginal||exif.CreateDate||exif.DateTimeDigitized);
+    modifiedAt=normalizeDate(exif.ModifyDate||file.lastModifiedDate||file.lastModified);
+    prepared.push({file,shotAt,modifiedAt,exifKeys:Object.keys(exif||{})});
+    box.insertAdjacentHTML('beforeend',`<div class="file">✅ ${file.name} · ${fmtBytes(file.size)} · 拍摄时间：${shotAt||'未读取到'}</div>`);
   }
 }
-filesEl.addEventListener('change', inspectFiles);
-function show(kind, msg){ const el=document.getElementById('status'); el.className='status '+kind; el.textContent=msg; }
-function setProgress(p){ const bar=document.getElementById('progress'); bar.classList.remove('hidden'); bar.querySelector('span').style.width = p+'%'; }
-
-document.getElementById('uploadForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  if(!cfg.backendUrl){ show('bad','Backend URL is not set. Organizer must deploy the Google Apps Script backend first.'); return; }
-  if(!prepared.length){ await inspectFiles(); if(!prepared.length){ show('bad','Please select valid photos.'); return; } }
-  const btn=document.getElementById('submitBtn'); btn.disabled=true; setProgress(5);
-  try{
-    const base = { eventId: cfg.eventId, eventTitle: cfg.eventTitle, uploader: document.getElementById('uploader').value.trim(), group: document.getElementById('group').value.trim(), note: document.getElementById('note').value.trim(), clientUploadAt: new Date().toISOString(), userAgent: navigator.userAgent };
-    let done=0;
-    for(const p of prepared){
-      const payload = {...base, filename:p.file.name, mimeType:p.file.type || 'application/octet-stream', size:p.file.size, shotAt:p.shotAt, modifiedAt:p.modifyAt, exifKeys:p.exifKeys, dataBase64: await fileToBase64(p.file)};
-      const body = new URLSearchParams(); body.set('payload', JSON.stringify(payload));
-      await fetch(cfg.backendUrl, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
-      done++; setProgress(5 + Math.round(done/prepared.length*90));
-    }
-    setProgress(100); show('ok', `Uploaded ${prepared.length} photo(s). Thank you — you can upload more if you want.`); filesEl.value=''; previewEl.innerHTML=''; prepared=[];
-  }catch(err){ show('bad','Upload failed: '+(err && err.message ? err.message : err)); }
-  finally{ btn.disabled=false; }
+document.getElementById('files').addEventListener('change',inspect);
+document.getElementById('uploadForm').addEventListener('submit',async e=>{
+  e.preventDefault(); await inspect();
+  if(!prepared.length){show('bad','请选择有效照片。');return;}
+  const uploader=document.getElementById('uploader').value.trim(); if(!uploader){show('bad','请填写姓名 / ID / 代号。');return;}
+  const btn=document.getElementById('submitBtn'); btn.disabled=true; prog(5);
+  try{let done=0; for(const p of prepared){
+    const payload={eventId:EVENT_ID,eventTitle:EVENT_TITLE,uploader,group:'',note:'',filename:p.file.name,mimeType:p.file.type||'application/octet-stream',size:p.file.size,shotAt:p.shotAt,modifiedAt:p.modifiedAt,clientUploadAt:new Date().toISOString(),exifKeys:p.exifKeys,userAgent:navigator.userAgent,dataBase64:await fileToBase64(p.file)};
+    const body=new URLSearchParams(); body.set('payload',JSON.stringify(payload));
+    await fetch(BACKEND,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+    done++; prog(5+Math.round(done/prepared.length*90));
+  } prog(100); show('ok',`已上传 ${prepared.length} 张。谢谢！可以继续选择照片上传。`); document.getElementById('files').value=''; document.getElementById('preview').innerHTML=''; prepared=[];
+  }catch(err){show('bad','上传失败，请换网络或稍后重试。')} finally{btn.disabled=false;}
 });
 </script>
-</body>
-</html>
+</body></html>
